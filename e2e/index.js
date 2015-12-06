@@ -1,8 +1,4 @@
-
-
-
 import scantradtk from '../lib';
-
 
 describe('scantradtk', function () {
 
@@ -26,15 +22,11 @@ describe('scantradtk', function () {
     }
   };
 
-
-  it('should create specified volume cbz file', function() {
-    "use strict";
+  it('should create specified volume cbz file', function () {
 
     var urlList = scantradtk.createPagesList(specification, mangaTitle, volumes);
-    scantradtk.createCbz('T17', urlList['T17']);
+    scantradtk.createCbz('T17', urlList.T17);
 
   });
-
-
 
 });

@@ -1,22 +1,17 @@
 import assert from 'assert';
 
-
-//import request from 'request';
 import sinon from 'sinon';
 import mockery from 'mockery';
 
 import fs from 'fs';
 
-
-
 var scantradtk;
 
 describe('scantradtk', function () {
 
-
   var requestStub;
 
-  before(function() {
+  before(function () {
 
     mockery.enable({
       warnOnReplace: false,
@@ -35,18 +30,18 @@ describe('scantradtk', function () {
 
   });
 
-  after(function(){
+  after(function (){
     mockery.disable();
   });
 
-  var specification_1 = {
+  var specification1 = {
     extension: 'jpg',
     pageURL: 'http://site.net/mangas/${title}/${chapter}/${page}.${extension}?v=f',
     chapterRule: 'none',
     pageRule: 'fixed2'
   };
 
-  var volumes_1 = {
+  var volumes1 = {
     T01: {
       begin: 4,
       end: 8
@@ -87,7 +82,7 @@ describe('scantradtk', function () {
 
   it('should create correctly the targets page url', function () {
 
-    var pageUrl = scantradtk.getPageUrl(specification_1, 'mangaTitle', 3, 4);
+    var pageUrl = scantradtk.getPageUrl(specification1, 'mangaTitle', 3, 4);
 
     assert.equal(typeof pageUrl, 'string', 'Page URL has to be a string');
     assert.equal(pageUrl, 'http://site.net/mangas/mangaTitle/3/04.jpg?v=f');
@@ -97,59 +92,44 @@ describe('scantradtk', function () {
 
   it('should create correctly the list of page', function () {
 
-    var urlList = scantradtk.createPagesList(specification_1, 'mangaTitle', volumes_1);
+    var urlList = scantradtk.createPagesList(specification1, 'mangaTitle', volumes1);
 
     assert.equal(typeof urlList, 'object', 'Volume list has to be an array');
     assert.equal(Object.keys(urlList).length, 2, 'Volume list has to have two entry for both requested volumes');
-    assert.notEqual(urlList['T01'], undefined, 'Volume list has to have one entry for T01 volume');
+    assert.notEqual(urlList.T01, undefined, 'Volume list has to have one entry for T01 volume');
 
-    var volumeList = urlList['T01'];
+    var volumeList = urlList.T01;
     assert.equal(typeof volumeList, 'object', 'Pages list has to be an array');
     let nbPages = scantradtk.configuration.PAGE_END - scantradtk.configuration.PAGE_BEGIN;
-    assert.equal(Object.keys(volumeList).length, (8 - 4 + 1) * (nbPages), 'All pages url have to be generated');
+    assert.equal(Object.keys(volumeList).length, (8 - 4 + 1) * nbPages, 'All pages url have to be generated');
     assert.notEqual(volumeList['http://site.net/mangas/mangaTitle/5/02.jpg?v=f'], undefined, 'page URL for chapter 5, page 2 has to be created correctly');
-    assert.equal(volumeList['http://site.net/mangas/mangaTitle/5/02.jpg?v=f'], 'T01-C005-P002.jpg', 'Page 2 for chapter 5 has to have a correct entryname')
+    assert.equal(volumeList['http://site.net/mangas/mangaTitle/5/02.jpg?v=f'], 'T01-C005-P002.jpg', 'Page 2 for chapter 5 has to have a correct entryname');
 
   });
 
+  it('should create the cbz archive', function (done) {
 
+    scantradtk.createCbz('T01', { }, done);
 
-  it('should create the cbz archive', function() {
-    "use strict";
-
-    scantradtk.createCbz('T01', { });
-
-    scantradtk.createCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
-/*
-    requestStub.returns(fs.createReadStream('notexist.md'));
-
-    scantradtk.createCbz('T02', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
-*/
+    scantradtk.createCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'}, done);
   });
-
-
 
 });
 
 describe('scantradtk zip error', function () {
 
-  before(function() {
+  before(function () {
 
     scantradtk = require('../lib');
 
   });
 
-  it('should manage zip error', function() {
-    "use strict";
+  it('should manage zip error', function () {
 
+    var archive = scantradtk.createCbz('T02', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
 
-     var archive = scantradtk.createCbz('T02', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
-
-
-     archive.emit('error', 'fake error');
+    archive.emit('error', 'fake error');
 
   });
-
-
 
 });
