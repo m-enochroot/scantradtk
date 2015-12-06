@@ -1,11 +1,13 @@
 OK- Test cbz construction with mockup request library
 OK- Test error
 OK- Provide e2e test
-- Publish source on GitHub
-- Document the module
+OK- Publish source on GitHub
+OK- Use Travis-CI
+OK-Use Coveralls
+OK- Put on Bitbucket
 - Publish the module on npm
+- Document the module
 
-- Put on Bitbucket
 - Use Webstorm for test/coverage and debug
 - Configure continuous integration to test and publish the module
 
