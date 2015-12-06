@@ -9,6 +9,8 @@ $ npm install --save scantradtk
 
 ## Usage
 
+To create url list for each volume page
+
 ```js
 var scantradtk = require('scantradtk');
 
