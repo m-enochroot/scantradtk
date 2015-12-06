@@ -4,8 +4,8 @@
   "description": "Tools to manage scantrad",
   "homepage": "",
   "author": {
-    "name": "Jerome Mare",
-    "email": "jerome.mare@gmail.com",
+    "name": "Enoch Root",
+    "email": "m.enochroot@gmail.com",
     "url": ""
   },
   "files": [
@@ -17,7 +17,7 @@
     "js",
     "manga"
   ],
-  "repository": "ssh://git@bitbucket.org/samgam/scantradtk.git",
+  "repository": "git@github.com:m-enochroot/scantradtk.git",
   "devDependencies": {
     "babel-core": "^5.5.0",
     "babel-preset-es2015": "^6.1.18",

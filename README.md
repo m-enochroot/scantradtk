@@ -12,11 +12,11 @@ $ npm install --save scantradtk
 ```js
 var scantradtk = require('scantradtk');
 
-scantradtk('Rainbow');
+scantradtk.createPagesList(spec, volumes);
 ```
 ## License
 
-MIT © [Jerome Mare]()
+MIT © [Enoch Root]()
 
 
 [npm-image]: https://badge.fury.io/js/scantradtk.svg
