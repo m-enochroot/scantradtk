@@ -107,11 +107,11 @@ describe('scantradtk', function () {
 
   });
 
-  it('should create the cbz archive', function (done) {
+  it('should create the cbz archive', function () {
 
-    scantradtk.createCbz('T01', { }, done);
+    scantradtk.createCbz('T01', { });
 
-    scantradtk.createCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'}, done);
+    scantradtk.createCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
   });
 
 });
