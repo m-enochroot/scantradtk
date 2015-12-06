@@ -5,11 +5,12 @@ OK- Publish source on GitHub
 OK- Use Travis-CI
 OK-Use Coveralls
 OK- Put on Bitbucket
-- Publish the module on npm
+OK- Configure continuous integration to test the module
+OK- Publish the module on npm
+- Fix error on coverage due to async function
 - Document the module
 
 - Use Webstorm for test/coverage and debug
-- Configure continuous integration to test and publish the module
 
 - Test other specification
 - Provide some default specification

@@ -1,4 +1,4 @@
-# scantradtk [![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/m-enochroot/scantradtk.svg?branch=master)](https://travis-ci.org/m-enochroot/scantradtk) [![Coverage Status](https://coveralls.io/repos/m-enochroot/scantradtk/badge.svg?branch=master&service=github)](https://coveralls.io/github/m-enochroot/scantradtk?branch=master) [![Dependency Status](https://david-dm.org/m-enochroot/scantradtk.svg)]
+# scantradtk [![NPM version][npm-image]][npm-url] [![Build Status](https://travis-ci.org/m-enochroot/scantradtk.svg?branch=master)](https://travis-ci.org/m-enochroot/scantradtk) [![Coverage Status](https://coveralls.io/repos/m-enochroot/scantradtk/badge.svg?branch=master&service=github)](https://coveralls.io/github/m-enochroot/scantradtk?branch=master) [![Dependency Status](https://david-dm.org/m-enochroot/scantradtk.svg)](https://david-dm.org/m-enochroot/scantradtk)
 > Tools to manage scantrad
 
 ## Installation
