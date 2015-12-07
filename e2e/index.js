@@ -1,4 +1,4 @@
-import scantradtk from '../lib';
+
 
 describe('scantradtk', function () {
 
@@ -21,6 +21,14 @@ describe('scantradtk', function () {
       end: 74
     }
   };
+
+  var scantradtk;
+
+  before(function () {
+
+    scantradtk = require('../lib');
+
+  });
 
   it('should create specified volume cbz file', function () {
 
