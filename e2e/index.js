@@ -1,7 +1,9 @@
+/*eslint-disable no-console */
 
 
 describe('scantradtk', function () {
 
+  /*
   var specification = {
     extension: 'jpg',
     pageURL: 'http://lel-scan.co/mangas/${title}/${chapter}/${page}.${extension}?v=f',
@@ -21,6 +23,7 @@ describe('scantradtk', function () {
       end: 74
     }
   };
+*/
 
   var scantradtk;
 
@@ -32,8 +35,13 @@ describe('scantradtk', function () {
 
   it('should create specified volume cbz file', function () {
 
+    console.log('create CBZ');
+    return scantradtk.createCbz('lel-scan.co', 'gantz', 382);
+
+    /*
     var urlList = scantradtk.createPagesList(specification, mangaTitle, volumes);
     scantradtk.createCbz('T17', urlList.T17);
+    */
 
   });
 

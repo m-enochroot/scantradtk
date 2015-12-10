@@ -1,9 +1,17 @@
-import assert from 'assert';
+import chai from 'chai';
 
 import sinon from 'sinon';
 import mockery from 'mockery';
 
 import fs from 'fs';
+
+chai.should();
+
+var assert = chai.assert;
+var expect = chai.expect;
+
+var chaiAsPromised = require('chai-as-promised');
+chai.use(chaiAsPromised);
 
 var scantradtk;
 
@@ -109,9 +117,11 @@ describe('scantradtk', function () {
 
   it('should create the cbz archive', function () {
 
-    scantradtk.createCbz('T01', { });
+    var result1 = scantradtk.createVolumeCbz('T01', { });
 
-    scantradtk.createCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
+    var result2 = scantradtk.createVolumeCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
+
+    return Promise.all([result1.promise, result2.promise]);
   });
 
 });
@@ -126,9 +136,11 @@ describe('scantradtk zip error', function () {
 
   it('should manage zip error', function () {
 
-    var archive = scantradtk.createCbz('T02', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
+    var result = scantradtk.createVolumeCbz('T02', {'http://toto.fr/mangas/T01.jpg': 'README.md'});
 
-    archive.emit('error', 'fake error');
+    result.archive.emit('error', 'fake error');
+
+    return expect(result.promise).to.be.rejectedWith('fake error');
 
   });
 

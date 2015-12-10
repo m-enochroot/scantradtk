@@ -9,12 +9,13 @@ $ npm install --save scantradtk
 
 ## Usage
 
-To create url list for each volume page
+To download a chapter use the following 
 
 ```js
 var scantradtk = require('scantradtk');
 
-scantradtk.createPagesList(spec, volumes);
+// Create cbz archive for chapter 66 of the manga Shingeki no Kyojin from the web site lel-scan.co
+scantradtk.createCbz('lel-scan.co', 'shingeki-no-kyojin', 66);
 ```
 ## License
 

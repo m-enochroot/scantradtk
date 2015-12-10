@@ -7,10 +7,13 @@ OK-Use Coveralls
 OK- Put on Bitbucket
 OK- Configure continuous integration to test the module
 OK- Publish the module on npm
+
+
+- Use Webstorm for test/coverage and debug
+
 - Fix error on coverage due to async function
 - Document the module
 
-- Use Webstorm for test/coverage and debug
 
 - Test other specification
 - Provide some default specification

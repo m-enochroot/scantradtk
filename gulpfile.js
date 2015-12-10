@@ -9,6 +9,7 @@ var plumber = require('gulp-plumber');
 var babel = require('gulp-babel');
 var del = require('del');
 var isparta = require('isparta');
+var sourceMaps = require('gulp-sourcemaps');
 
 // Initialize the babel transpiler so ES2015 files gets compiled
 // when they're loaded
@@ -68,7 +69,9 @@ gulp.task('e2e-test', ['pre-test'], function (cb) {
 
 gulp.task('babel', ['clean'], function () {
   return gulp.src('lib/**/*.js')
+    .pipe(sourceMaps.init())
     .pipe(babel())
+    .pipe(sourceMaps.write('.'), {sourceRoot: 'lib'})
     .pipe(gulp.dest('dist'));
 });
 
