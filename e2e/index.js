@@ -3,28 +3,6 @@
 
 describe('scantradtk', function () {
 
-  /*
-  var specification = {
-    extension: 'jpg',
-    pageURL: 'http://lel-scan.co/mangas/${title}/${chapter}/${page}.${extension}?v=f',
-    chapterRule: 'none',
-    pageRule: 'fixed2'
-  };
-
-  var mangaTitle = 'shingeki-no-kyojin';
-
-  var volumes = {
-    T17: {
-      begin: 68,
-      end: 70
-    },
-    T18: {
-      begin: 71,
-      end: 74
-    }
-  };
-*/
-
   var scantradtk;
 
   before(function () {
@@ -36,12 +14,22 @@ describe('scantradtk', function () {
   it('should create specified volume cbz file', function () {
 
     console.log('create CBZ');
-    return scantradtk.createCbz('lel-scan.co', 'gantz', 382);
+    var chapter301 = {
+      title: 'shingeki-no-kyojin',
+      chapter: 76,
+      page: {
+        min: 0,
+        max: 80
+      }
+    };
 
-    /*
-    var urlList = scantradtk.createPagesList(specification, mangaTitle, volumes);
-    scantradtk.createCbz('T17', urlList.T17);
-    */
+    var scheme = scantradtk.schemes['lel-scan.co'];
+
+    var resources = scantradtk.createResourceList(scheme, chapter301);
+
+    console.log(resources);
+
+    return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
 
   });
 
