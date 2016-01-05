@@ -259,7 +259,7 @@ describe('module', function () {
 
 
     return scantradtk.createResourceList(scheme1, data1, shouldFetchResources)
-      .then(function (result) {
+      .then(function (/* result */) {
         // Make any test
 
       });

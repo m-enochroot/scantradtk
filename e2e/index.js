@@ -28,7 +28,7 @@ describe('scantradtk', function () {
 
     scantradtk.createResourceList(scheme, chapter301, true).then(function (resources) {
       return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
-    }).then(function() {
+    }).then(function () {
       done();
     }).catch(function (error) {
       console.error(error);
