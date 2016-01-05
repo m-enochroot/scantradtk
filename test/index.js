@@ -5,6 +5,8 @@ import mockery from 'mockery';
 
 import fs from 'fs';
 
+import nock from 'nock';
+
 chai.should();
 
 var assert = chai.assert;
@@ -15,113 +17,62 @@ chai.use(chaiAsPromised);
 
 var scantradtk;
 
-/*
-describe('scantradtk', function () {
+var shouldFetchResources = true;
 
-  var requestStub;
+var shouldNotFetchResources = !shouldFetchResources;
 
-  before(function () {
-
-    mockery.enable({
-      warnOnReplace: false,
-      warnOnUnregistered: false,
-      useCleanCache: false
-    });
-
-
-    requestStub = sinon.stub().returns(fs.createReadStream('README.md'));
-
-    // replace the module `request` with a stub object
-    mockery.registerMock('request', requestStub);
-
-
-    scantradtk = require('../lib');
-
-  });
-
-  after(function (){
-    mockery.disable();
-  });
-
-  var specification1 = {
-    extension: 'jpg',
-    pageURL: 'http://site.net/mangas/${title}/${chapter}/${page}.${extension}?v=f',
-    chapterRule: 'none',
-    pageRule: 'fixed2'
-  };
-
-  var volumes1 = {
-    T01: {
-      begin: 4,
-      end: 8
+var scheme1 = {
+  patterns: {
+    url: 'http://toto.co/mangas/${title}/${chapter}/${page}.jpg',
+    target: 'C${chapter}-${page}.jpg'
+  },
+  counters: {
+    primary: 'chapter',
+    secondary: 'page'
+  },
+  parameters: {
+    title: {
+      description: 'manga title',
+      type: 'string'
     },
-    T02: {
-      begin: 9,
-      end: 9
+    chapter: {
+      description: 'manga Chapter',
+      type: 'primary',
+      filter: {
+        target: 'fixed3'
+      }
+    },
+    page: {
+      description: 'Page of the current working chapter',
+      type: 'secondary',
+      filter: {
+        url: 'fixed2',
+        target: 'fixed3'
+      }
     }
-  };
-
-*/
-
-/*
-  it('should create correctly the targets page url', function () {
-
-    var pageUrl = scantradtk.getPageUrl(specification1, 'mangaTitle', 3, 4);
-
-    assert.equal(typeof pageUrl, 'string', 'Page URL has to be a string');
-    assert.equal(pageUrl, 'http://site.net/mangas/mangaTitle/3/04.jpg?v=f');
-
-  });
+  }
+};
 
 
-  it('should create correctly the list of page', function () {
+var data1 = {
+  title: 'gantz',
+  chapter: 301,
+  page: {
+    min: 0,
+    max: 80
+  }
+};
 
-    var urlList = scantradtk.createPagesList(specification1, 'mangaTitle', volumes1);
 
-    assert.equal(typeof urlList, 'object', 'Volume list has to be an array');
-    assert.equal(Object.keys(urlList).length, 2, 'Volume list has to have two entry for both requested volumes');
-    assert.notEqual(urlList.T01, undefined, 'Volume list has to have one entry for T01 volume');
+var data2 = {
+  title: 'gantz',
+  chapter: {
+    min: 21,
+    max: 125
+  },
+  page: 5
+};
 
-    var volumeList = urlList.T01;
-    assert.equal(typeof volumeList, 'object', 'Pages list has to be an array');
-    let nbPages = scantradtk.configuration.PAGE_END - scantradtk.configuration.PAGE_BEGIN;
-    assert.equal(Object.keys(volumeList).length, (8 - 4 + 1) * nbPages, 'All pages url have to be generated');
-    assert.notEqual(volumeList['http://site.net/mangas/mangaTitle/5/02.jpg?v=f'], undefined, 'page URL for chapter 5, page 2 has to be created correctly');
-    assert.equal(volumeList['http://site.net/mangas/mangaTitle/5/02.jpg?v=f'], 'T01-C005-P002.jpg', 'Page 2 for chapter 5 has to have a correct entryname');
-
-  });
-
-  it('should create the cbz archive', function () {
-
-    var result1 = scantradtk.createVolumeCbz('T01', { });
-
-    var result2 = scantradtk.createVolumeCbz('T01', { 'http://toto.fr/mangas/T01.jpg': 'README.md'});
-
-    return Promise.all([result1.promise, result2.promise]);
-  });
-
-});
-
-describe('scantradtk zip error', function () {
-
-  before(function () {
-
-    scantradtk = require('../lib');
-
-  });
-
-  it('should manage zip error', function () {
-
-    var result = scantradtk.createVolumeCbz('T02', {'http://toto.fr/mangas/T01.jpg': 'README.md'});
-
-    result.archive.emit('error', 'fake error');
-
-    return expect(result.promise).to.be.rejectedWith('fake error');
-
-  });
-});
-
-*/
 
 describe('create resource list', function () {
 
@@ -157,40 +108,6 @@ describe('create resource list', function () {
 
   });
 
-  var scheme1 = {
-    patterns: {
-      url: 'http://lel-scan.co/mangas/${title}/${chapter}/${page}.jpg?v=f',
-      target: 'C${chapter}-${page}.jpg'
-    },
-    counters: {
-      primary: 'chapter',
-      secondary: 'page'
-    },
-    parameters: {
-      title: {
-        description: 'manga title',
-        type: 'string'
-      },
-      chapter: {
-        description: 'manga Chapter',
-        type: 'primary',
-        filter: {
-          url: 'none',
-          target: 'fixed3'
-        }
-      },
-      page: {
-        description: 'Page of the current working chapter',
-        type: 'secondary',
-        filter: {
-          url: 'fixed2',
-          target: 'fixed3'
-        }
-      }
-    }
-  };
-
-
   var schemeError1 = {
     patterns: {
       url: 'http://lel-scan.co/mangas/${title}/${chapter}/${page}.jpg?v=f',
@@ -223,26 +140,6 @@ describe('create resource list', function () {
       }
     }
   };
-
-  var data1 = {
-    title: 'gantz',
-    chapter: 301,
-    page: {
-      min: 0,
-      max: 80
-    }
-  };
-
-
-  var data2 = {
-    title: 'gantz',
-    chapter: {
-      min: 21,
-      max: 125
-    },
-    page: 5
-  };
-
   var dataError1 = {
     title: 'gantz',
     page: 5
@@ -250,39 +147,128 @@ describe('create resource list', function () {
 
   it('should create the resource list using scheme definition', function () {
 
-    var result = scantradtk.createResourceList(scheme1, data1);
-    expect(result).to.be.an('object');
-    expect(Object.keys(result)).to.have.length(81);
-    expect(result).to.have.any.keys('C301-000.jpg', 'C301-051.jpg');
-    expect(result).to.have.property('C301-000.jpg', 'http://lel-scan.co/mangas/gantz/301/00.jpg?v=f');
+    var test1 = scantradtk.createResourceList(scheme1, data1, shouldNotFetchResources)
+      .then(function (result) {
+        expect(result).to.be.an('Array');
+        expect(result).to.have.length(81);
+        expect(result[0]).to.have.property('name', 'C301-000.jpg');
+        expect(result[0]).to.have.property('url', 'http://toto.co/mangas/gantz/301/00.jpg');
+        expect(result[51]).to.have.property('name', 'C301-051.jpg');
+        expect(result[51]).to.have.property('url', 'http://toto.co/mangas/gantz/301/51.jpg');
+      }).catch(function (error) {
+        throw error;
+      });
 
-    result = scantradtk.createResourceList(scheme1, data2);
-    expect(result).to.be.an('object');
-    expect(Object.keys(result)).to.have.length(105);
-    expect(result).to.have.any.keys('C021-005.jpg', 'C125-005.jpg', 'C098-005.jpg');
-    expect(result).to.have.property('C098-005.jpg', 'http://lel-scan.co/mangas/gantz/98/05.jpg?v=f');
+    var test2 = scantradtk.createResourceList(scheme1, data2, shouldNotFetchResources)
+      .then(function (result) {
+        expect(result).to.be.an('Array');
+        expect(result).to.have.length(105);
+        expect(result[0]).to.have.property('name', 'C021-005.jpg');
+        expect(result[0]).to.have.property('url', 'http://toto.co/mangas/gantz/21/05.jpg');
+        expect(result[72]).to.have.property('name', 'C093-005.jpg');
+        expect(result[72]).to.have.property('url', 'http://toto.co/mangas/gantz/93/05.jpg');
+      });
+
+    return Promise.all([test1, test2]);
+
   });
 
   it('should report an error of counter are not defined in data', function () {
-    var result = scantradtk.createResourceList(scheme1, dataError1);
-    expect(result).to.be.an('object');
-    expect(Object.keys(result)).to.have.length(0);
+    return scantradtk.createResourceList(scheme1, dataError1, shouldNotFetchResources)
+      .then(function (result) {
+        expect(result).to.be.an('Array');
+        expect(result).to.have.length(0);
+      });
 
   });
 
   it('should evaluate to undefined of type of parameter is unknown', function () {
 
-    var result = scantradtk.createResourceList(schemeError1, data1);
-    expect(result).to.be.an('object');
-    expect(Object.keys(result)).to.have.length(81);
-    expect(result).to.have.any.keys('C301-000.jpg', 'C301-051.jpg');
-    expect(result).to.have.property('C301-000.jpg', 'http://lel-scan.co/mangas/-undef-/301/00.jpg?v=f');
+    return scantradtk.createResourceList(schemeError1, data1, shouldNotFetchResources)
+      .then(function (result) {
+        expect(result).to.be.an('Array');
+        expect(result).to.have.length(81);
+        expect(result[0]).to.have.property('name', 'C301-000.jpg');
+        expect(result[0]).to.have.property('url', 'http://lel-scan.co/mangas/-undef-/301/00.jpg?v=f');
+      });
 
   });
 
 });
 
-describe('create resource list', function () {
+describe('module', function () {
+
+  before(function (done) {
+
+    nock('http://toto.co')
+      .head(/\/mangas\/gantz\/301\/[0-9]{2}\.jpg/)
+      .times(20)
+      .reply(200);
+
+    nock('http://toto.co')
+      .head(/\/mangas\/gantz\/301\/[0-9]{2}\.jpg/)
+      .times(61)
+      .reply(404);
+
+    scantradtk = require('../lib');
+    done();
+  });
+
+  it('should create the resource list depending on resource availability', function () {
+
+
+    return scantradtk.createResourceList(scheme1, data1, shouldFetchResources)
+      .then(function (result) {
+
+        expect(result).to.be.an('Array');
+        expect(result).to.have.length(81);
+        expect(result[0]).to.have.property('name', 'C301-000.jpg');
+        expect(result[0]).to.have.property('url', 'http://toto.co/mangas/gantz/301/00.jpg');
+        expect(result[51]).to.have.property('url', undefined);
+
+      });
+
+  });
+
+});
+
+
+describe('module', function () {
+
+  before(function (done) {
+
+    nock('http://toto.co')
+      .head(/\/mangas\/gantz\/301\/[0-9]{2}\.jpg/)
+      .times(20)
+      .reply(200);
+
+    nock('http://toto.co')
+      .head(/\/mangas\/gantz\/301\/[0-9]{2}\.jpg/)
+      .replyWithError('unable to contact server');
+
+    nock('http://toto.co')
+      .head(/\/mangas\/gantz\/301\/[0-9]{2}\.jpg/)
+      .times(60)
+      .reply(404);
+
+    scantradtk = require('../lib');
+    done();
+  });
+
+  it('should create the resource list depending on resource availability in case of unavailability', function () {
+
+
+    return scantradtk.createResourceList(scheme1, data1, shouldFetchResources)
+      .then(function (result) {
+        // Make any test
+
+      });
+  });
+
+});
+
+
+describe('module', function () {
 
   var requestStub;
 
@@ -309,28 +295,31 @@ describe('create resource list', function () {
     mockery.disable();
   });
 
+  var resources = [
+    { name: 'README.md', url: 'http://toto.fr/mangas/T01.jpg' },
+    { name: 'README2.md', url: undefined }
+  ];
+
   it('should create the cbz archive', function () {
 
-    var result1 = scantradtk.createTargetArchive({ }, 'cbz', { filename: 'T01' });
-    var result2 = scantradtk.createTargetArchive({ 'README.md': 'http://toto.fr/mangas/T01.jpg' }, 'cbz', { filename: 'T02' });
+    var result1 = scantradtk.createTargetArchive([], 'cbz', { filename: 'T01' });
+    var result2 = scantradtk.createTargetArchive(resources, 'cbz', { filename: 'T02' });
 
     return Promise.all([result1.promise, result2.promise]);
   });
 
-});
 
+  it('should manage bad target selection', function () {
 
-describe('createTargetArchive ', function () {
+    var result = scantradtk.createTargetArchive(resources, 'fake', { filename: 'T02' });
 
-  before(function () {
-
-    scantradtk = require('../lib');
+    return expect(result).to.be.rejectedWith('bad target: fake');
 
   });
 
   it('should manage zip error', function () {
 
-    var result = scantradtk.createTargetArchive({ 'README.md': 'http://toto.fr/mangas/T01.jpg' }, 'cbz', { filename: 'T02' });
+    var result = scantradtk._createCBZArchive(resources, 'cbz', { filename: 'T02' });
 
     result.archive.emit('error', 'fake error');
 
@@ -339,4 +328,3 @@ describe('createTargetArchive ', function () {
   });
 
 });
-

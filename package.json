@@ -36,6 +36,7 @@
     "gulp-sourcemaps": "^1.6.0",
     "isparta": "^3.0.3",
     "mockery": "^1.4.0",
+    "nock": "^4.0.0",
     "sinon": "^1.17.2"
   },
   "scripts": {

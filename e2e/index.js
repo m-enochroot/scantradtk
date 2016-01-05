@@ -5,15 +5,16 @@ describe('scantradtk', function () {
 
   var scantradtk;
 
+  this.timeout(360000);
+
   before(function () {
 
     scantradtk = require('../lib');
 
   });
 
-  it('should create specified volume cbz file', function () {
+  it('should create specified volume cbz file', function (done) {
 
-    console.log('create CBZ');
     var chapter301 = {
       title: 'shingeki-no-kyojin',
       chapter: 76,
@@ -25,11 +26,14 @@ describe('scantradtk', function () {
 
     var scheme = scantradtk.schemes['lel-scan.co'];
 
-    var resources = scantradtk.createResourceList(scheme, chapter301);
-
-    console.log(resources);
-
-    return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
+    scantradtk.createResourceList(scheme, chapter301, true).then(function (resources) {
+      return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
+    }).then(function() {
+      done();
+    }).catch(function (error) {
+      console.error(error);
+      done();
+    });
 
   });
 
