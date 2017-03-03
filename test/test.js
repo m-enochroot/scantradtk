@@ -21,64 +21,17 @@ var shouldFetchResources = true;
 
 var shouldNotFetchResources = !shouldFetchResources;
 
-var scheme1 = {
-  patterns: {
-    url: 'http://toto.co/mangas/${title}/${chapter}/${page}.jpg',
-    target: 'C${chapter}-${page}.jpg'
-  },
-  counters: {
-    primary: 'chapter',
-    secondary: 'page'
-  },
-  parameters: {
-    title: {
-      description: 'manga title',
-      type: 'string'
-    },
-    chapter: {
-      description: 'manga Chapter',
-      type: 'primary',
-      filter: {
-        target: 'fixed3'
-      }
-    },
-    page: {
-      description: 'Page of the current working chapter',
-      type: 'secondary',
-      filter: {
-        url: 'fixed2',
-        target: 'fixed3'
-      }
-    }
-  }
-};
-
-
-var data1 = {
-  title: 'gantz',
-  chapter: 301,
-  page: {
-    min: 0,
-    max: 80
-  }
-};
-
-
-var data2 = {
-  title: 'gantz',
-  chapter: {
-    min: 21,
-    max: 125
-  },
-  page: 5
-};
+var schemes = require('../data/test/schemes.json');
+var data = require('../data/test/data.json');
 
 
 describe('create resource list', function () {
 
+  this.timeout(20000);
+
   before(function () {
 
-    scantradtk = require('../lib');
+    scantradtk = require('../dist');
 
   });
 
@@ -108,46 +61,9 @@ describe('create resource list', function () {
 
   });
 
-  var schemeError1 = {
-    patterns: {
-      url: 'http://lel-scan.co/mangas/${title}/${chapter}/${page}.jpg?v=f',
-      target: 'C${chapter}-${page}.jpg'
-    },
-    counters: {
-      primary: 'chapter',
-      secondary: 'page'
-    },
-    parameters: {
-      title: {
-        description: 'manga title',
-        type: 'toto'
-      },
-      chapter: {
-        description: 'manga Chapter',
-        type: 'primary',
-        filter: {
-          url: 'none',
-          target: 'fixed3'
-        }
-      },
-      page: {
-        description: 'Page of the current working chapter',
-        type: 'secondary',
-        filter: {
-          url: 'fixed2',
-          target: 'fixed3'
-        }
-      }
-    }
-  };
-  var dataError1 = {
-    title: 'gantz',
-    page: 5
-  };
-
   it('should create the resource list using scheme definition', function () {
 
-    var test1 = scantradtk.createResourceList(scheme1, data1, shouldNotFetchResources)
+    var test1 = scantradtk.createResourceList(schemes.scheme1, data.data1, shouldNotFetchResources)
       .then(function (result) {
         expect(result).to.be.an('Array');
         expect(result).to.have.length(81);
@@ -159,7 +75,7 @@ describe('create resource list', function () {
         throw error;
       });
 
-    var test2 = scantradtk.createResourceList(scheme1, data2, shouldNotFetchResources)
+    var test2 = scantradtk.createResourceList(schemes.scheme1, data.data2, shouldNotFetchResources)
       .then(function (result) {
         expect(result).to.be.an('Array');
         expect(result).to.have.length(105);
@@ -174,7 +90,7 @@ describe('create resource list', function () {
   });
 
   it('should report an error of counter are not defined in data', function () {
-    return scantradtk.createResourceList(scheme1, dataError1, shouldNotFetchResources)
+    return scantradtk.createResourceList(schemes.scheme1, data.dataError1, shouldNotFetchResources)
       .then(function (result) {
         expect(result).to.be.an('Array');
         expect(result).to.have.length(0);
@@ -184,7 +100,7 @@ describe('create resource list', function () {
 
   it('should evaluate to undefined of type of parameter is unknown', function () {
 
-    return scantradtk.createResourceList(schemeError1, data1, shouldNotFetchResources)
+    return scantradtk.createResourceList(schemes.schemeError1, data.data1, shouldNotFetchResources)
       .then(function (result) {
         expect(result).to.be.an('Array');
         expect(result).to.have.length(81);
@@ -210,14 +126,14 @@ describe('module', function () {
       .times(61)
       .reply(404);
 
-    scantradtk = require('../lib');
+    scantradtk = require('../dist');
     done();
   });
 
   it('should create the resource list depending on resource availability', function () {
 
 
-    return scantradtk.createResourceList(scheme1, data1, shouldFetchResources)
+    return scantradtk.createResourceList(schemes.scheme1, data.data1, shouldFetchResources)
       .then(function (result) {
 
         expect(result).to.be.an('Array');
@@ -251,19 +167,48 @@ describe('module', function () {
       .times(60)
       .reply(404);
 
-    scantradtk = require('../lib');
+    scantradtk = require('../dist');
     done();
   });
 
   it('should create the resource list depending on resource availability in case of unavailability', function () {
 
 
-    return scantradtk.createResourceList(scheme1, data1, shouldFetchResources)
+    return scantradtk.createResourceList(schemes.scheme1, data.data1, shouldFetchResources)
       .then(function (/* result */) {
         // Make any test
 
       });
   });
+
+});
+
+
+describe('module', function () {
+
+
+  before(function () {
+
+    scantradtk = require('../dist');
+
+  });
+
+
+  it('shall manage scheme registration', function () {
+
+    scantradtk.registerScheme('scheme1', schemes.scheme1);
+
+  });
+
+
+  it('shall manage scheme unregistration', function () {
+
+    scantradtk.registerScheme('scheme1', schemes.scheme1);
+
+    scantradtk.unregisterScheme('scheme1');
+
+  });
+
 
 });
 
@@ -287,7 +232,7 @@ describe('module', function () {
     mockery.registerMock('request', requestStub);
 
 
-    scantradtk = require('../lib');
+    scantradtk = require('../dist');
 
   });
 

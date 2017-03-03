@@ -8,13 +8,19 @@
 
 The module use two majors concept
 - scheme: used to define the url of resource url construction
+- data: used to define the data that would be targeted by the command
 - target: used to define the final destination of this archive
+- resources: a list of resource defined as follow
+
+```{ name: 'name of the resource', url: 'url to access it' }``` 
   
 Scheme is a json object that define some information parameters (optional or mandatory):
 - url: a string representing the resource url, it uses placeholder to refer variable data
 - extension: file extension, for example jpg for jpeg image file
 - parameters: a collection of parameters used on placeholder, formating rules can be defined here
 - counters: an arborescence of parameter that behave has iterators to generate the list of resource's url
+
+Target is a type that define a workflow to be applied to a set of resources
 
 ## Installation
 
@@ -24,7 +30,7 @@ $ npm install --save scantradtk
 
 ## Usage
 
-To download a chapter use the following 
+To download a set of data use the following 
 
 ```js
 var scantradtk = require('scantradtk');
@@ -59,16 +65,9 @@ var lelScheme = {
                 
 scantradtk.registerScheme('lel-scan.co', lelScheme);
 
-// Add a target 
-var lelTarget = {
-    type: 'zip',
-    extension: 'cbz'
-  };
-  
-scantradtk.registerTarget('cbz', lelTarget);
-
 // Donwload data using a specific scheme and target 
 var data = {
+    scheme: 'lel-scan.co',
     title: 'gantz',
     counters: [
       { type: 'value',
@@ -80,17 +79,17 @@ var data = {
       }
     ]
   };
-scantradtk.downloadResources('lel-scan.co', 'cbz', data);
 
+// All provided methods are asynch
+scantradtk.createResourceList(data).then(function (resources) {
+      return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
+    });
 ```
 ## License
 
 MIT © [Enoch Root]()
 
-
-[npm-image]: https://badge.fury.io/js/scantradtk.svg
-[npm-url]: https://npmjs.org/package/scantradtk
-[travis-image]: https://travis-ci.org//scantradtk.svg?branch=master
-[travis-url]: https://travis-ci.org//scantradtk
-[daviddm-image]: https://david-dm.org//scantradtk.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org//scantradtk
+[![NPM version][npm-image]][npm-url]
+[![Build Status](https://travis-ci.org/m-enochroot/scantradtk.svg?branch=master)](https://travis-ci.org/m-enochroot/scantradtk)
+[![Coverage Status](https://coveralls.io/repos/m-enochroot/scantradtk/badge.svg?branch=master&service=github)](https://coveralls.io/github/m-enochroot/scantradtk?branch=master) 
+[![Dependency Status](https://david-dm.org/m-enochroot/scantradtk.svg)](https://david-dm.org/m-enochroot/scantradtk)

@@ -1,0 +1,65 @@
+{
+  "scheme1": {
+    "patterns": {
+      "url": "http://toto.co/mangas/${title}/${chapter}/${page}.jpg",
+      "target": "C${chapter}-${page}.jpg"
+    },
+    "counters": {
+      "primary": "chapter",
+      "secondary": "page"
+    },
+    "parameters": {
+      "title": {
+        "description": "manga title",
+        "type": "string"
+      },
+      "chapter": {
+        "description": "manga Chapter",
+        "type": "primary",
+        "filter": {
+          "target": "fixed3"
+        }
+      },
+      "page": {
+        "description": "Page of the current working chapter",
+        "type": "secondary",
+        "filter": {
+          "url": "fixed2",
+          "target": "fixed3"
+        }
+      }
+    }
+  },
+  "schemeError1": {
+    "patterns": {
+      "url": "http://lel-scan.co/mangas/${title}/${chapter}/${page}.jpg?v=f",
+      "target": "C${chapter}-${page}.jpg"
+    },
+    "counters": {
+      "primary": "chapter",
+      "secondary": "page"
+    },
+    "parameters": {
+      "title": {
+        "description": "manga title",
+        "type": "toto"
+      },
+      "chapter": {
+        "description": "manga Chapter",
+        "type": "primary",
+        "filter": {
+          "url": "none",
+          "target": "fixed3"
+        }
+      },
+      "page": {
+        "description": "Page of the current working chapter",
+        "type": "secondary",
+        "filter": {
+          "url": "fixed2",
+          "target": "fixed3"
+        }
+      }
+    }
+  }
+}

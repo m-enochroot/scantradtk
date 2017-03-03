@@ -10,6 +10,8 @@ var babel = require('gulp-babel');
 var del = require('del');
 var isparta = require('isparta');
 var sourceMaps = require('gulp-sourcemaps');
+var watch = require('gulp-watch');
+
 
 // Initialize the babel transpiler so ES2015 files gets compiled
 // when they're loaded
@@ -68,15 +70,24 @@ gulp.task('e2e-test', ['pre-test'], function (cb) {
 });
 
 gulp.task('babel', ['clean'], function () {
-  return gulp.src('lib/**/*.js')
+  return gulp.src(['lib/**/*.js', 'test/**/*.js'])
     .pipe(sourceMaps.init())
     .pipe(babel())
-    .pipe(sourceMaps.write('.'), {sourceRoot: 'lib'})
+    .pipe(sourceMaps.write('.'), {
+      includeContent: false,
+      sourceRoot: function (file) {
+        return path.relative(file.path, __dirname);
+      }
+    })
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('clean', function () {
   return del('dist');
+});
+
+gulp.task('watch', function () {
+  gulp.watch(['lib/**/*.js', 'test/**/*.js'], ['prepublish']);
 });
 
 gulp.task('prepublish', ['nsp', 'babel']);

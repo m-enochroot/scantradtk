@@ -5,7 +5,7 @@ describe('scantradtk', function () {
 
   var scantradtk;
 
-  this.timeout(360000);
+  this.timeout(2000000);
 
   before(function () {
 
@@ -13,26 +13,25 @@ describe('scantradtk', function () {
 
   });
 
-  it('should create specified volume cbz file', function (done) {
+  it('should create specified volume cbz file', function () {
 
-    var chapter301 = {
-      title: 'shingeki-no-kyojin',
-      chapter: 76,
+    var volume = {
+      title: 'shingeki no kyojin - before the fall',
+      chapter: {
+        min: 0,
+        max: 0
+      },
       page: {
         min: 0,
         max: 80
       }
     };
 
-    var scheme = scantradtk.schemes['lel-scan.co'];
+    var scheme = scantradtk.schemes['www.scanenligne.com'];
 
-    scantradtk.createResourceList(scheme, chapter301, true).then(function (resources) {
-      return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'AOT-C076' });
-    }).then(function () {
-      done();
-    }).catch(function (error) {
-      console.error(error);
-      done();
+
+    return scantradtk.createResourceList(scheme, volume, true).then(function (resources) {
+      return scantradtk.createTargetArchive(resources, 'cbz', { filename: 'BtF-T01' });
     });
 
   });

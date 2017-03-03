@@ -34,6 +34,7 @@
     "gulp-nsp": "^2.1.0",
     "gulp-plumber": "^1.0.0",
     "gulp-sourcemaps": "^1.6.0",
+    "gulp-watch": "^4.3.5",
     "isparta": "^3.0.3",
     "mockery": "^1.4.0",
     "nock": "^4.0.0",
